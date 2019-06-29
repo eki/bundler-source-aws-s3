@@ -26,13 +26,14 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
     # calculate `loaded_from` which is used by bundler to calculate
     # `full_gem_path` for our plugin.
     spec_path = destination.join("#{spec.full_name}.gemspec")
-    spec_path.open('wb') { |f| f.write spec.to_ruby }
     spec.loaded_from = spec_path.to_s
+    spec_path.open('wb') { |f| f.write spec.to_ruby }
 
     # NOTE We should not need to do this because we should be getting one of
     # our own specs. When we've run everything through bundler, we should
     # assert that source is correct, once that's verified we can remove this
     # line.
+    raise "source is not set" unless spec.source && spec.source == self
     spec.source = self
 
     post_install(spec)
