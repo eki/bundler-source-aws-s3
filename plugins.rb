@@ -32,9 +32,11 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
 
     # Bundler plugin api, we need to return a Bundler::Index
     def specs
+      # Only pull gems if bundler tells us to check remote
       pull if remote?
 
-      # Okay, bundler, what are you going to do now?
+      # We haven't pulled any s3 gems if the directory doesn't exist, so we'll
+      # give bundler an empty index.
       return Bundler::Index.new unless File.directory?(s3_gems_path)
 
       Bundler::Index.build do |index|
