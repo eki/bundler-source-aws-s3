@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = 'bundler-source-aws-s3'
-  spec.version       = '0.2.0'
+  spec.version       = '0.2.1'
   spec.authors       = ['Eric K Idema']
   spec.email         = ['eki@vying.org']
 
@@ -9,5 +9,5 @@ Gem::Specification.new do |spec|
   spec.homepage      = "https://github.com/eki/bundler-source-aws-s3"
   spec.license       = "MIT"
 
-  spec.files         = Dir['README.md LICENCE.txt plugins.rb']
+  spec.files         = Dir['README.md', 'LICENCE.txt', 'plugins.rb']
 end
