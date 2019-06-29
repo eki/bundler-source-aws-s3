@@ -32,6 +32,46 @@ end
 When Bundler sees the `type: 'aws-s3'` it will automatically install and use
 this plugin to install gems from your s3 source.
 
+## Development
+
+We don't have a very good development story (there are no tests, yay!). You'll
+want to fork this repository and use your own fork by adding this to a
+`Gemfile` that you plan to use to test your fork:
+
+```ruby
+plugin 'bundler-source-aws-s3', git: 'https://github.com/<you>/bundler-source-aws-s3.git'
+```
+
+You may also want to wipe a few directories out as you test:
+
+```ruby
+rm -rf ./.bundle/plugin
+rm -rf ~/.bundle/bundler-source-aws-s3
+```
+
+You may also want to wipe out the `install_path` for the s3 uri you're testing
+against. You can find that in irb by instantiating your plugin like:
+
+```ruby
+>> BundlerSourceAwsS3::S3Source.new(uri: 's3://vying-gems').send(:install_path)
+```
+
+Although this will only work if you're running irb in a directory with a
+Gemfile and a `.bundle/` directory. These can be empty as of this writing.
+
+It can also help to poke at the plugin in irb:
+
+```ruby
+irb -I . -r bundler -r plugins.rb
+```
+
+## Other s3 source plugins
+
+As of this writing there is another gem called
+[bundler-source-s3](https://rubygems.org/gems/bundler-source-s3) that doesn't
+work and you probably don't want to confuse with this gem. If you use type 's3'
+(instead of 'aws-s3') in your Gemfile you'll get that plugin, not this one.
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at
