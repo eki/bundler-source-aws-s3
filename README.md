@@ -19,6 +19,11 @@ First, you should already have gems in s3 and you should be able to install
 them with Rubygems. Follow the [guide for using s3 as a gem
 source](https://guides.rubygems.org/using-s3-source/).
 
+For this plugin to work the aws cli should be able to fetch your gems. The
+plugin will run a command like `aws s3 sync s3://your-source <local path>` and
+you may want to verify that you have aws cli setup correctly (permissions,
+etc) to be able to run that command.
+
 ### Add aws-s3 source to your Gemfile
 
 In your Gemfile, add a source like this:
