@@ -6,19 +6,18 @@ require 'rubygems/package'
 
 class BundlerSourceAwsS3 < Bundler::Plugin::API
   class S3Source < Bundler::Source
-    # Bundler plugin api
+    # Bundler plugin api, we need to install the gem for the given spec and
+    # then call post_install.
     def install(spec, opts)
       print_using_message "Using #{spec.name} #{spec.version} from #{self}"
+
+      validate!(spec)
 
       package = package_for(spec)
       destination = install_path.join(spec.full_name)
 
       Bundler.mkdir_p(destination)
       package.extract_files(destination)
-
-      # TODO We should validate our spec to prevent possibly writing a file to
-      # the wrong location, etc.
-      raise "Error: spec.loaded_from is not set" unless spec.loaded_from
       File.open(spec.loaded_from, 'wb') { |f| f.write spec.to_ruby }
 
       post_install(spec)
@@ -44,6 +43,7 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
       end
     end
 
+    # Bundler calls this to tell us fetching remote gems is okay.
     def remote!
       @remote = true
     end
@@ -52,12 +52,14 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
       @remote
     end
 
+    # TODO What is bundler telling us if unlock! is called?
     def unlock!
-      puts "DEBUG: unlock! called"
+      puts "[aws-s3] DEBUG: unlock! called"
     end
 
+    # TODO What is bundler telling us if cached! is called?
     def cached!
-      puts "DEBUG: cached! called"
+      puts "[aws-s3] DEBUG: cached! called"
     end
 
     def to_s
@@ -65,6 +67,17 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
     end
 
     private
+
+    # This is a guard against attempting to install a spec that doesn't match
+    # our requirements / expectations.
+    #
+    # If we want to be more trusting, we could probably safely remove this
+    # method.
+    def validate!(spec)
+      unless spec.source == self && spec.loaded_from == loaded_from_for(spec)
+        raise "[aws-s3] Error #{spec.full_name} spec is not valid"
+      end
+    end
 
     # We will use this value as the given spec's loaded_from. It should be the
     # path fo the installed gem's gemspec.
@@ -104,7 +117,7 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
 
     # Produces a list of Gem::Package for the s3 gems.
     def packages
-      Dir.entries(s3_gems_path.join('gems')).
+      @packages ||= Dir.entries(s3_gems_path.join('gems')).
         map { |entry| s3_gems_path.join('gems').join(entry) }.
         select { |gem_path| File.file?(gem_path) }.
         map { |gem_path| Gem::Package.new(gem_path.to_s) }

@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = 'bundler-source-aws-s3'
-  spec.version       = '0.1.18'
+  spec.version       = '0.1.19'
   spec.authors       = ['Eric K Idema']
   spec.email         = ['eki@vying.org']
 
