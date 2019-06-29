@@ -29,6 +29,7 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
     spec_path.open('wb') { |f| f.write spec.to_ruby }
 
     # If we set this in `specs` can we skip this now?
+    puts "DEBUG: spec.loaded_from: #{spec.loaded_from.inspect}"
     spec.loaded_from = spec_path.to_s
 
     post_install(spec)
@@ -46,10 +47,12 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
         # bundler needs to load our gems, we need to provide a spec with
         # `loaded_from` set correctly.  Do we really need to verify that the
         # gemspec already exists (iow, has been installed)?
-        spec_path = loaded_from_for(spec)
-        if File.file?(spec_path)
-          spec.loaded_from = spec_path.to_s
-        end
+      # spec_path = loaded_from_for(spec)
+      # if File.file?(spec_path)
+      #   spec.loaded_from = spec_path.to_s
+      # end
+
+        spec.loaded_from = loaded_from_for(spec).to_s
 
         Bundler.rubygems.validate(spec)
         index << spec
