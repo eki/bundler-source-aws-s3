@@ -44,7 +44,7 @@ plugin 'bundler-source-aws-s3', git: 'https://github.com/<you>/bundler-source-aw
 
 You may also want to wipe a few directories out as you test:
 
-```ruby
+```
 rm -rf ./.bundle/plugin
 rm -rf ~/.bundle/bundler-source-aws-s3
 ```
@@ -61,7 +61,7 @@ Gemfile and a `.bundle/` directory. These can be empty as of this writing.
 
 It can also help to poke at the plugin in irb:
 
-```ruby
+```
 irb -I . -r bundler -r plugins.rb
 ```
 
