@@ -50,12 +50,6 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
       end
     end
 
-    # TODO What should this method actually do?
-    def dependency_names_to_double_check
-      puts "DEBUG: dependency_names_to_double_check called"
-      []
-    end
-
     def remote!
       @remote = true
     end
