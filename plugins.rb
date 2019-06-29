@@ -74,7 +74,8 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
     # This is the path to the s3 gems for our source uri. We will pull the s3
     # gems into this directory.
     def s3_gems_path
-      user_bundle_path.join('bundler-source-aws-s3').join(bucket).join(path)
+      Bundler.user_bundle_path.
+        join('bundler-source-aws-s3').join(bucket).join(path)
     end
 
     # Pull s3 gems from the source and store them in
