@@ -54,6 +54,18 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
       []
     end
 
+    def remote!
+      puts "DEBUG: remote! called"
+    end
+
+    def unlock!
+      puts "DEBUG: unlock! called"
+    end
+
+    def cached!
+      puts "DEBUG: cached! called"
+    end
+
     def to_s
       "aws-s3 plugin with uri #{uri}"
     end
