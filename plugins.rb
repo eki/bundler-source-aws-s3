@@ -29,7 +29,7 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
     spec_path.open('wb') { |f| f.write spec.to_ruby }
 
     # If we set this in `specs` can we skip this now?
-    spec.loaded_from = spec_path
+    spec.loaded_from = spec_path.to_s
 
     post_install(spec)
   end
@@ -48,7 +48,7 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
         # gemspec already exists (iow, has been installed)?
         spec_path = loaded_from_for(spec)
         if File.file?(spec_path)
-          spec.loaded_from = spec_path
+          spec.loaded_from = spec_path.to_s
         end
 
         Bundler.rubygems.validate(spec)
@@ -66,7 +66,7 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
 
   def loaded_from_for(spec)
     destination = install_path.join(spec.full_name)
-    destination.join("#{spec.full_name}.gemspec").to_s
+    destination.join("#{spec.full_name}.gemspec")
   end
 
   # This path is going to be under bundler's gem_install_dir and we'll then
