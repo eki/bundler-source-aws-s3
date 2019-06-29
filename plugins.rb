@@ -54,6 +54,10 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
       []
     end
 
+    def to_s
+      "aws-s3 plugin with uri #{uri}"
+    end
+
     private
 
     # We will use this value as the given spec's loaded_from. It should be the
