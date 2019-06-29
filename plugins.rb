@@ -34,6 +34,9 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
     def specs
       pull if remote?
 
+      # Okay, bundler, what are you going to do now?
+      return Bundler::Index.new unless File.directory?(s3_gems_path)
+
       Bundler::Index.build do |index|
         packages.map(&:spec).each do |spec|
           spec.source = self
@@ -47,6 +50,7 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
 
     # TODO What should this method actually do?
     def dependency_names_to_double_check
+      puts "DEBUG: dependency_names_to_double_check called"
       []
     end
 
