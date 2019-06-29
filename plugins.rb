@@ -19,7 +19,7 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
       package = package_for(spec)
       destination = install_path.join(spec.full_name)
 
-      mkdir_p(destination)
+      Bundler.mkdir_p(destination)
       package.extract_files(destination)
 
       # TODO We should validate our spec to prevent possibly writing a file to
@@ -85,7 +85,7 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
       # We only want to pull once in a single bundler run.
       return @pull if defined?(@pull)
 
-      mkdir_p(s3_gems_path)
+      Bundler.mkdir_p(s3_gems_path)
 
       output, status = Open3.capture2e(sync_cmd)
 
