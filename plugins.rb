@@ -51,6 +51,11 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
     end
   end
 
+  # TODO What should this method actually do?
+  def dependency_names_to_double_check
+    []
+  end
+
   private
 
   # This path is going to be under bundler's gem_install_dir and we'll then
