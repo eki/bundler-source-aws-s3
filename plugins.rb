@@ -14,6 +14,7 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
   class S3Source < Bundler::Source
     # Bundler plugin api
     def install(spec, opts)
+      remote? # just a test for now, in the future we will conditionally pull
       print_using_message "Using #{spec.name} #{spec.version} from #{self}"
 
       package = package_for(spec)
@@ -32,6 +33,7 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
 
     # Bundler plugin api, we need to return a Bundler::Index
     def specs
+      remote? # just a test for now, in the future we will conditionally pull
       # TODO Should we only pull during install? We need to pull on the initial
       # install, but this is also being invoked on `bundle show` and it seems
       # unnecessary there (especially since we're invoking an external command
@@ -56,6 +58,17 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
 
     def remote!
       puts "DEBUG: remote! called"
+      @remote = true
+    end
+
+    def remote?
+      puts "DEBUG: remote?"
+      # I suspect there is a race condition where, on the initial plugin
+      # install, remote! is not called because our plugin isn't yet installed,
+      # but all other sources have been told to fetch gems remotely.
+      puts "  peaking in definition: #{Bundler.definition.instance_variable_get(:@remote).inspect}"
+
+      @remote
     end
 
     def unlock!
