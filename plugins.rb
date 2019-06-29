@@ -16,7 +16,7 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
   # Bundler plugin api, 
   def install(spec, opts)
     package = package_for(spec)
-    destination = install_path.join(package.spec.full_name)
+    destination = install_path.join(spec.full_name)
 
     mkdir_p(destination)
     package.extract_files(destination)
@@ -25,16 +25,11 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
     # the given gemspec into the extracted gem's directory. This is used to
     # calculate `loaded_from` which is used by bundler to calculate
     # `full_gem_path` for our plugin.
-    spec_path = destination.join("#{spec.full_name}.gemspec")
-    spec.loaded_from = spec_path.to_s
+    spec_path = loaded_from_for(spec)
     spec_path.open('wb') { |f| f.write spec.to_ruby }
 
-    # NOTE We should not need to do this because we should be getting one of
-    # our own specs. When we've run everything through bundler, we should
-    # assert that source is correct, once that's verified we can remove this
-    # line.
-    raise "source is not set" unless spec.source && spec.source == self
-    spec.source = self
+    # If we set this in `specs` can we skip this now?
+    spec.loaded_from = spec_path
 
     post_install(spec)
   end
@@ -46,6 +41,16 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
     Bundler::Index.build do |index|
       packages.map(&:spec).each do |spec|
         spec.source = self
+
+        # This isn't important on the initial install flow, but later when
+        # bundler needs to load our gems, we need to provide a spec with
+        # `loaded_from` set correctly.  Do we really need to verify that the
+        # gemspec already exists (iow, has been installed)?
+        spec_path = loaded_from_for(spec)
+        if File.file?(spec_path)
+          spec.loaded_from = spec_path
+        end
+
         Bundler.rubygems.validate(spec)
         index << spec
       end
@@ -58,6 +63,11 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
   end
 
   private
+
+  def loaded_from_for(spec)
+    destination = install_path.join(spec.full_name)
+    destination.join("#{spec.full_name}.gemspec").to_s
+  end
 
   # This path is going to be under bundler's gem_install_dir and we'll then
   # mirror the bucket/path directory structure from the source. This is where
