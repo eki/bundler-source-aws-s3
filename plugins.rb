@@ -1,13 +1,7 @@
 # frozen_string_literal: true
 
-# Do we need to require bundler explicitly? It seems like it will be loaded
-# already?
-require 'bundler'
 require 'fileutils'
 require 'open3'
-
-# Do we need both rubygems and rubygems/package or just rubygems/package?
-require 'rubygems'
 require 'rubygems/package'
 
 class BundlerSourceAwsS3 < Bundler::Plugin::API
