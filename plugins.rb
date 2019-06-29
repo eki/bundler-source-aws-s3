@@ -15,6 +15,8 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
 
   # Bundler plugin api, 
   def install(spec, opts)
+    print_using_message "Using #{version_message(spec)} from #{self}"
+
     package = package_for(spec)
     destination = install_path.join(spec.full_name)
 
