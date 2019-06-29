@@ -21,38 +21,26 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
     mkdir_p(destination)
     package.extract_files(destination)
 
-    # This was copied from bundler's examples, it seems like we need to write
-    # the given gemspec into the extracted gem's directory. This is used to
-    # calculate `loaded_from` which is used by bundler to calculate
-    # `full_gem_path` for our plugin.
-    spec_path = loaded_from_for(spec)
-    spec_path.open('wb') { |f| f.write spec.to_ruby }
-
-    # If we set this in `specs` can we skip this now?
-    puts "DEBUG: spec.loaded_from: #{spec.loaded_from.inspect}"
-    spec.loaded_from = spec_path.to_s
+    # TODO We should validate our spec to prevent possibly writing a file to
+    # the wrong location, etc.
+    raise "Error: spec.loaded_from is not set" unless spec.loaded_from
+    File.open(spec.loaded_from, 'wb') { |f| f.write spec.to_ruby }
 
     post_install(spec)
   end
 
   # Bundler plugin api, we need to return a Bundler::Index
   def specs
+    # TODO Should we only pull during install? We need to pull on the initial
+    # install, but this is also being invoked on `bundle show` and it seems
+    # unnecessary there (especially since we're invoking an external command
+    # and making a network request).
     pull
 
     Bundler::Index.build do |index|
       packages.map(&:spec).each do |spec|
         spec.source = self
-
-        # This isn't important on the initial install flow, but later when
-        # bundler needs to load our gems, we need to provide a spec with
-        # `loaded_from` set correctly.  Do we really need to verify that the
-        # gemspec already exists (iow, has been installed)?
-      # spec_path = loaded_from_for(spec)
-      # if File.file?(spec_path)
-      #   spec.loaded_from = spec_path.to_s
-      # end
-
-        spec.loaded_from = loaded_from_for(spec).to_s
+        spec.loaded_from = loaded_from_for(spec)
 
         Bundler.rubygems.validate(spec)
         index << spec
@@ -67,9 +55,11 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
 
   private
 
+  # We will use this value as the given spec's loaded_from. It should be the
+  # path fo the installed gem's gemspec.
   def loaded_from_for(spec)
     destination = install_path.join(spec.full_name)
-    destination.join("#{spec.full_name}.gemspec")
+    destination.join("#{spec.full_name}.gemspec").to_s
   end
 
   # This path is going to be under bundler's gem_install_dir and we'll then
