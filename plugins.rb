@@ -49,7 +49,7 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
     end
 
     def remote?
-      @remote
+      @remote ||= false
     end
 
     # TODO What is bundler telling us if unlock! is called?
@@ -110,9 +110,9 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
 
       Bundler.mkdir_p(s3_gems_path)
 
-      output, status = Open3.capture2e(sync_cmd)
-
-      @pull = status.success?
+      unless @pull = system(sync_cmd)
+        raise "[aws-s3] #{sync_cmd.inspect} failed."
+      end
     end
 
     # Produces a list of Gem::Package for the s3 gems.
