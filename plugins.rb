@@ -110,7 +110,7 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
 
       Bundler.mkdir_p(s3_gems_path)
 
-      unless @pull = system(sync_cmd)
+      unless @pull = Open3.capture2(sync_cmd).last.success?
         raise "[aws-s3] #{sync_cmd.inspect} failed."
       end
     end
