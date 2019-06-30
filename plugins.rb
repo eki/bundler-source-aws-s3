@@ -80,7 +80,7 @@ class BundlerSourceAwsS3 < Bundler::Plugin::API
     end
 
     # We will use this value as the given spec's loaded_from. It should be the
-    # path fo the installed gem's gemspec.
+    # path of the installed gem's gemspec.
     def loaded_from_for(spec)
       destination = install_path.join(spec.full_name)
       destination.join("#{spec.full_name}.gemspec").to_s
