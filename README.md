@@ -29,12 +29,13 @@ etc) to be able to run that command.
 In your Gemfile, add a source like this:
 
 ```ruby
-plugin 'bundler-source-aws-s3'
-
 source 's3://my-bucket/gems', type: 'aws-s3' do
   gem 'my-cool-gem'
 end
 ```
+
+Bundler will infer that this gem is the plugin for the 'aws-s3' type and fetch
+and install it automatically.
 
 For libraries, it can be normal to declare your dependencies in your gemspec
 file. In those cases, your Gemfile will normall be mostly empty. You can still
@@ -48,8 +49,6 @@ spec.add_development_dependency 'private-gem-in-my-s3'
 spec.add_dependency 'another-private-gem-in-s3'
 
 # And, your Gemfile would contain:
-
-plugin 'bundler-source-aws-s3'
 
 source 'https://rubygems.org'
 source 's3://my-super-private-bucket-of-gems', type: 'aws-s3' do
