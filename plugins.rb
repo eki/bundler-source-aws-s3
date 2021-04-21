@@ -3,6 +3,7 @@
 require 'fileutils'
 require 'open3'
 require 'rubygems/package'
+require 'uri'
 
 class BundlerSourceAwsS3 < Bundler::Plugin::API
   class S3Source < Bundler::Source
